@@ -11,17 +11,16 @@ using CairoMakie
 muoA = 0
 muoB = 0
 
-# prefactors chosen such that they all coincide at low overpotential
+# prefactors chosen such that they all coincide at low overpotential at 300K
 bv = ButlerVolmer(100, 0.5)
 m = Marcus(900, λ) # max current ~900
 amhc = AsymptoticMarcusHushChidsey(15000, λ)
-# mhc = MarcusHushChidsey(15000, λ)
 
 models = [bv, m, amhc]
-# plot_models(models) # if you want to check Tafel plots
 T_vals = [250, 300, 450]
-Ω_vals = [0.075, 0.1] # "within the range" for interfaces between Li metal and SEI materials
+Ω_vals = [0.075, 0.1]
 
+# start out by getting thermodynamic phase boundaries, this will speed up beginning of phase diagram construction later
 T_list = []
 Ω_list = []
 pbs_list = []
@@ -39,13 +38,17 @@ end
 
 df_start = DataFrame([T_list, Ω_list, pbs_list], [:T, :Ω, :pb0])
 
+# now we can actually build the phase maps
 model_type_list = []
 T_list = []
 Ω_list = []
-data_list = []
+pbs_list = []
+I_list = []
 
+# this is just so the legend in the plot is nicer-looking later
 model_text = Dict(:ButlerVolmer => "Butler-Volmer", :Marcus => "Marcus", :AsymptoticMarcusHushChidsey => "asymptotic MHC")
 
+# iterate through the parameters and build phase maps
 for row in eachrow(df_start)
     println(row)
     start_guess = row.pb0
@@ -53,14 +56,11 @@ for row in eachrow(df_start)
         for m in models
             model_type = nameof(typeof(m))
             print(model_type)
-            # figure out I_step, I_max
+
             pbs1 = find_phase_boundaries(1, m, T=row.T, Ω=row.Ω, muoA=muoA, muoB=muoB, guess=start_guess)
             steps = abs.(pbs1 .- row.pb0)
             I_step = 1
-            I_max = 250
-            if any(steps.<0.001)
-                I_max = 700
-            end
+            I_max = 700
 
             # build phase diagram
             pbs, I = phase_diagram(m, start_guess=start_guess, T=row.T, Ω=row.Ω, muoA=muoA, muoB=muoB, I_step=I_step, I_max=I_max, warn=false, tol=1e-2)
@@ -68,16 +68,16 @@ for row in eachrow(df_start)
             push!(model_type_list, model_text[model_type])
             push!(T_list, row.T)
             push!(Ω_list, row.Ω)
-            push!(data_list, [pbs I])
+            push!(pbs_list, pbs)
+            push!(I_list, I)
         end
     end
 end
 
 # this is not the most elegant way to store this data but it works...
-df_full = DataFrame([model_type_list, T_list, Ω_list, data_list], [:model, :T, :Ω, :pb_data])
+df_full = DataFrame([model_type_list, T_list, Ω_list, pbs_list, I_list], [:model, :T, :Ω, :pbs, :I])
 
-convert_data(mat) = mat[:, 1], mat[:,2]
-
+# set up for plotting...
 theme = Theme(fontsize = 22,
             linewidth = 4,
             font = "Noto")
@@ -103,21 +103,20 @@ for T_ind in T_inds
         Ω = Ω_vals[Ω_ind]
         df = subset(df_full, :T=>x->x.==T, :Ω=>x->x.==Ω)
         for r in eachrow(df)
-            data = convert_data(r.pb_data)
-            lines!(g[Ω_ind+1, T_ind], data...; label=string(r.model))
+            lines!(g[Ω_ind+1, T_ind], r.pbs, r.I; label=string(r.model))
         end
     end
 end
 
+# y axes should line up across each row, then we can just label the leftmost one
 axes[2,1].yticks = ([0,50,100,150,200], ["0","50","100","150","200"])
 axes[3,1].yticks = ([0,100,200,300,400,500], ["0","100","200","300","400", "500"])
 xlims!.(axes[2:3,:], Ref((0,1)))
 ylims!.(axes[3,:], Ref((0, 530)))
 ylims!.(axes[2,:], Ref((0, 210)))
-
-setproperty!.(axes[1,:], :xticklabelsvisible, false)
 setproperty!.(axes[:,2:end], :yticklabelsvisible, false)
 
+# add parameter and axis labels...
 Label(g[1, 4], "Rate models", tellheight=false, width=5, rotation=3pi/2, padding=(-25,0,0,0), font = "TeX Gyre Heros Bold",)
 Label(g[2, 4], "Ω=$(Ω_vals[1])", tellheight=false, width=5, rotation=3pi/2, padding=(-25,0,0,0), font = "TeX Gyre Heros Bold",)
 Label(g[3, 4], "Ω=$(Ω_vals[2])", tellheight=false, width=5, rotation=3pi/2, padding=(-25,0,0,0), font = "TeX Gyre Heros Bold",)
@@ -128,11 +127,14 @@ end
 
 axes[2,1].ylabel = "Current"
 axes[3,2].xlabel = "x"
+
+# tweak spacing
 colgap!(g, 30)
 rowgap!(g, 15)
 
 axislegend(axes[3,3], position=:ct)
 
+# now add the Tafel plots along the top row
 V = 0.001:0.01:0.35
 for T_ind in T_inds
     T = T_vals[T_ind]
@@ -143,7 +145,6 @@ end
 
 for i in 1:length(T_vals)
     axes[1,i].yscale = log10
-    axes[1,i].xticklabelsvisible = true
     axes[1,i].limits = (0,0.34,6,2e5)
 end
 axes[1,2].xlabel = "V"
