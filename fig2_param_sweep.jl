@@ -4,12 +4,7 @@ using Serialization
 using DataFrames
 using CairoMakie
 
-λ = .224
-
-# obviously end member that's "all vacancies" has µ=0
-# we can choose the other end to be 0 (effectively setting a reference potential)
-muoA = 0
-muoB = 0
+λ = .3
 
 # prefactors chosen such that they all coincide at low overpotential at 300K
 bv = ButlerVolmer(100, 0.5)
@@ -17,21 +12,23 @@ m = Marcus(900, λ) # max current ~900
 amhc = AsymptoticMarcusHushChidsey(15000, λ)
 
 models = [bv, m, amhc]
-T_vals = [250, 300, 450]
+T_vals = [275, 350, 500]
 Ω_vals = [0.075, 0.1]
+
+I_step = 0.2
+I_max = 250
 
 # start out by getting thermodynamic phase boundaries, this will speed up beginning of phase diagram construction later
 T_list = []
 Ω_list = []
 pbs_list = []
-step_list = []
 
 for Ω in Ω_vals
     for T in T_vals
         push!(T_list, T)
         push!(Ω_list, Ω)
         pbs0 = []
-        pbs0 = find_phase_boundaries(0, bv, Ω=Ω, muoA=muoA, muoB=muoB, T=T, guess=[0.01, 0.99])
+        pbs0 = find_phase_boundaries(0, bv, Ω=Ω, T=T, guess=[0.01, 0.99])
         push!(pbs_list, pbs0)
     end
 end
@@ -39,43 +36,29 @@ end
 df_start = DataFrame([T_list, Ω_list, pbs_list], [:T, :Ω, :pb0])
 
 # now we can actually build the phase maps
-model_type_list = []
-T_list = []
-Ω_list = []
-pbs_list = []
-I_list = []
 
 # this is just so the legend in the plot is nicer-looking later
 model_text = Dict(:ButlerVolmer => "Butler-Volmer", :Marcus => "Marcus", :AsymptoticMarcusHushChidsey => "asymptotic MHC")
 
 # iterate through the parameters and build phase maps
-for row in eachrow(df_start)
-    println(row)
-    start_guess = row.pb0
-    if !isapprox(start_guess[1], start_guess[2]) && !any(isnan.(start_guess))
-        for m in models
-            model_type = nameof(typeof(m))
-            print(model_type)
+# this is the expensive bit...I'm saving out the data so we can skip to plotting, but leaving the code that generated it here
+# for row in eachrow(df_start)
+#     println(row)
+#     start_guess = row.pb0
+#     if !isapprox(start_guess[1], start_guess[2]) && !any(isnan.(start_guess))
+#         for m in models
+#             model_type = nameof(typeof(m))
+#             print(model_type)
 
-            pbs1 = find_phase_boundaries(1, m, T=row.T, Ω=row.Ω, muoA=muoA, muoB=muoB, guess=start_guess)
-            steps = abs.(pbs1 .- row.pb0)
-            I_step = 1
-            I_max = 700
-
-            # build phase diagram
-            pbs, I = phase_diagram(m, start_guess=start_guess, T=row.T, Ω=row.Ω, muoA=muoA, muoB=muoB, I_step=I_step, I_max=I_max, warn=false, tol=1e-2)
+#             # build phase diagram
+#             pbs, I = phase_diagram(m, start_guess=start_guess.+[0.005,-0.005], T=row.T, Ω=row.Ω, I_step=I_step, I_max=I_max, warn=false, tol=1e-2)
         
-            push!(model_type_list, model_text[model_type])
-            push!(T_list, row.T)
-            push!(Ω_list, row.Ω)
-            push!(pbs_list, pbs)
-            push!(I_list, I)
-        end
-    end
-end
-
-# this is not the most elegant way to store this data but it works...
-df_full = DataFrame([model_type_list, T_list, Ω_list, pbs_list, I_list], [:model, :T, :Ω, :pbs, :I])
+#             open("data/fig2/$(nameof(typeof(m)))_T$(row.T)_Omega$(row.Ω).txt", "w") do io
+#                 writedlm(io, [pbs I])
+#             end
+#         end
+#     end
+# end
 
 # set up for plotting...
 theme = Theme(fontsize = 22,
@@ -101,19 +84,28 @@ for T_ind in T_inds
     for Ω_ind in Ω_inds
         T = T_vals[T_ind]
         Ω = Ω_vals[Ω_ind]
-        df = subset(df_full, :T=>x->x.==T, :Ω=>x->x.==Ω)
-        for r in eachrow(df)
-            lines!(g[Ω_ind+1, T_ind], r.pbs, r.I; label=string(r.model))
+        # df = subset(df_full, :T=>x->x.==T, :Ω=>x->x.==Ω)
+        # for r in eachrow(df)
+        #     lines!(g[Ω_ind+1, T_ind], r.pbs, r.I; label=string(r.model))
+        # end
+        for m in models
+            fname = "data/fig2/$(nameof(typeof(m)))_T$(T)_Omega$(Ω).txt"
+            if isfile(fname)
+                data = readdlm("data/fig2/$(nameof(typeof(m)))_T$(T)_Omega$(Ω).txt")
+                pbs = data[:,1]
+                I = data[:,2]
+                lines!(g[Ω_ind+1, T_ind], pbs, I, label=model_text[nameof(typeof(m))])
+            end
         end
     end
 end
 
 # y axes should line up across each row, then we can just label the leftmost one
-axes[2,1].yticks = ([0,50,100,150,200], ["0","50","100","150","200"])
-axes[3,1].yticks = ([0,100,200,300,400,500], ["0","100","200","300","400", "500"])
+# axes[2,1].yticks = ([0,50,100,150], ["0","50","100","150"])
+# axes[3,1].yticks = ([0,100,200,300], ["0","100","200","300"])
 xlims!.(axes[2:3,:], Ref((0,1)))
-ylims!.(axes[3,:], Ref((0, 530)))
-ylims!.(axes[2,:], Ref((0, 210)))
+ylims!.(axes[3,:], Ref((0, 220)))
+ylims!.(axes[2,:], Ref((0, 110)))
 setproperty!.(axes[:,2:end], :yticklabelsvisible, false)
 
 # add parameter and axis labels...
@@ -151,5 +143,5 @@ axes[1,2].xlabel = "V"
 
 text!(axes[2,3], 0.1, 50, text="(uniform mixing at\n all x and I)", justification=:center)
 
-save("T_omega_sweep.png", f)
+save("fig2.png", f)
 f
