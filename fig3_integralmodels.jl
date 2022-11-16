@@ -70,9 +70,29 @@ data = readdlm("data/fig3/pbs_I_mhc_lambda_10kT.txt")
 pbs_mhc3 = data[:,1]
 I_mhc3 = data[:,2]
 
-# pbs_amhc1, I_amhc1 = phase_diagram(amhc1, I_step=20, start_guess=pbs0, tol=1e-2)
-# pbs_amhc2, I_amhc2 = phase_diagram(amhc2, I_step=20, start_guess=pbs0, tol=1e-2)
-# pbs_amhc3, I_amhc3 = phase_diagram(amhc3, I_step=20, start_guess=pbs0, tol=1e-2)
+# pbs_amhc1, I_amhc1 = phase_diagram(amhc1, I_step=10, start_guess=pbs0, tol=1e-2)
+# open("data/fig3/pbs_I_amhc_lambda_2kT.txt", "w") do io
+#     writedlm(io, [pbs_amhc1 I_amhc1])
+# end
+data = readdlm("data/fig3/pbs_I_amhc_lambda_2kT.txt")
+pbs_amhc1 = data[:,1]
+I_amhc1 = data[:,2]
+
+# pbs_amhc2, I_amhc2 = phase_diagram(amhc2, I_step=10, start_guess=pbs0, tol=1e-2)
+# open("data/fig3/pbs_I_amhc_lambda_5kT.txt", "w") do io
+#     writedlm(io, [pbs_amhc2 I_amhc2])
+# end
+data = readdlm("data/fig3/pbs_I_amhc_lambda_5kT.txt")
+pbs_amhc2 = data[:,1]
+I_amhc2 = data[:,2]
+
+# pbs_amhc3, I_amhc3 = phase_diagram(amhc3, I_step=10, start_guess=pbs0, tol=1e-2)
+# open("data/fig3/pbs_I_amhc_lambda_10kT.txt", "w") do io
+#     writedlm(io, [pbs_amhc3 I_amhc3])
+# end
+data = readdlm("data/fig3/pbs_I_amhc_lambda_10kT.txt")
+pbs_amhc3 = data[:,1]
+I_amhc3 = data[:,2]
 
 theme = Theme(fontsize = 22,
             linewidth = 4,
