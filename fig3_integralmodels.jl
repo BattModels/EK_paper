@@ -2,9 +2,10 @@ using ElectrochemicalKinetics
 using DelimitedFiles
 using CairoMakie
 
-λ₁ = 2 * 298 * kB
-λ₂ = 5 * 298 * kB
-λ₃ = 10 * 298 * kB
+kT = 298 * kB
+λ₁ = 2 * kT
+λ₂ = 5 * kT
+λ₃ = 10 * kT
 
 mhckv1 = MarcusHushChidseyDOS(15000, λ₁, "./data/fig3/Li_100_dos.txt")
 mhc1 = MarcusHushChidsey(150000, λ₁)
@@ -122,4 +123,5 @@ lines!(ax3, pbs_mhc3, I_mhc3, label="MHC")
 axislegend(ax3)
 ylims!.([ax1, ax2, ax3], Ref((0,7000)))
 
+save("fig3.png", fig)
 fig
