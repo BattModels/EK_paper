@@ -94,7 +94,7 @@ for T_ind in T_inds
                 data = readdlm("data/fig2/$(nameof(typeof(m)))_T$(T)_Omega$(Ω).txt")
                 pbs = data[:,1]
                 I = data[:,2]
-                lines!(g[Ω_ind+1, T_ind], pbs, I, label=model_text[nameof(typeof(m))])
+                lines!(g[Ω_ind+1, T_ind], pbs, I./900, label=model_text[nameof(typeof(m))])
             end
         end
     end
@@ -104,8 +104,8 @@ end
 # axes[2,1].yticks = ([0,50,100,150], ["0","50","100","150"])
 # axes[3,1].yticks = ([0,100,200,300], ["0","100","200","300"])
 xlims!.(axes[2:3,:], Ref((0,1)))
-ylims!.(axes[3,:], Ref((0, 220)))
-ylims!.(axes[2,:], Ref((0, 110)))
+ylims!.(axes[3,:], Ref((0, 230/900)))
+ylims!.(axes[2,:], Ref((0, 115/900)))
 setproperty!.(axes[:,2:end], :yticklabelsvisible, false)
 
 # add parameter and axis labels...
@@ -117,7 +117,10 @@ for j in 1:length(T_vals)
     axes[1,j].title = "T=$(T_vals[j])"
 end
 
-axes[2,1].ylabel = "Current"
+# axes[1,1].yticks = (900 .* 10.0 .^ -2:1:2, [L"10^{-2}I_0", L"10^{-1}I_0", L"I_0", L"10I_0", L"10^{2}I_0"])
+# axes[2,1].yticks = (900 .* 10.0 .^ -2:1:2, [L"10^{-2}I_0", L"10^{-1}I_0", L"I_0", L"10I_0", L"10^{2}I_0"])
+
+axes[2,1].ylabel = L"\textrm{Current }[I_0]"
 axes[3,2].xlabel = "x"
 
 # tweak spacing
@@ -130,14 +133,15 @@ axislegend(axes[3,3], position=:ct)
 V = 0.001:0.01:0.35
 for T_ind in T_inds
     T = T_vals[T_ind]
-    lines!(axes[1,T_ind], V, abs.(bv(V, T=T)))
-    lines!(axes[1,T_ind], V, abs.(m(V, T=T)))
-    lines!(axes[1,T_ind], V, abs.(amhc(V, T=T)))
+    # nondimensionalizing by the Marcus I₀
+    lines!(axes[1,T_ind], V, abs.(bv(V, T=T))./900)
+    lines!(axes[1,T_ind], V, abs.(m(V, T=T))./900)
+    lines!(axes[1,T_ind], V, abs.(amhc(V, T=T))./900)
 end
 
 for i in 1:length(T_vals)
     axes[1,i].yscale = log10
-    axes[1,i].limits = (0,0.34,6,2e5)
+    axes[1,i].limits = (0,0.34,6/900,2e5/900)
 end
 axes[1,2].xlabel = "V"
 

@@ -104,24 +104,25 @@ fig = Figure(resolution=(1300,500))
 grid = fig[1, 1:2] = GridLayout()
 
 ax_args = Dict(:xlabel=>"x", :xgridvisible=>false, :ygridvisible=>false)
-ax1 = Axis(grid[1,1]; title=L"λ=2k_{\text{B}}T", ylabel="I", ax_args...)
+ax1 = Axis(grid[1,1]; title=L"λ=2k_{\text{B}}T", ylabel=L"\textrm{I }[I_0]", ax_args...)
 ax2 = Axis(grid[1,2]; title=L"λ=5k_{\text{B}}T", yticklabelsvisible=false, ax_args...)
 ax3 = Axis(grid[1,3]; title=L"λ=10k_{\text{B}}T", yticklabelsvisible=false, ax_args...)
 
-lines!(ax1, pbs_amhc1, I_amhc1, label="asymptotic MHC")
-lines!(ax1, pbs_mhckv1, I_mhckv1, label="MHC+DOS (Li metal)")
-lines!(ax1, pbs_mhc1, I_mhc1, label="MHC")
+# nondimensionalize by the equivalent Marcus model I₀
+lines!(ax1, pbs_amhc1, I_amhc1./9000, label="asymptotic MHC")
+lines!(ax1, pbs_mhckv1, I_mhckv1./9000, label="MHC+DOS (Li metal)")
+lines!(ax1, pbs_mhc1, I_mhc1./9000, label="MHC")
 
-lines!(ax2, pbs_amhc2, I_amhc2, label="asymptotic MHC")
-lines!(ax2, pbs_mhckv2, I_mhckv2, label="MHC+DOS (Li metal)")
-lines!(ax2, pbs_mhc2, I_mhc2, label="MHC")
+lines!(ax2, pbs_amhc2, I_amhc2./9000, label="asymptotic MHC")
+lines!(ax2, pbs_mhckv2, I_mhckv2./9000, label="MHC+DOS (Li metal)")
+lines!(ax2, pbs_mhc2, I_mhc2./9000, label="MHC")
 
-lines!(ax3, pbs_amhc3, I_amhc3, label="asymptotic MHC")
-lines!(ax3, pbs_mhckv3, I_mhckv3, label="MHC+DOS (Li metal)")
-lines!(ax3, pbs_mhc3, I_mhc3, label="MHC")
+lines!(ax3, pbs_amhc3, I_amhc3./9000, label="asymptotic MHC")
+lines!(ax3, pbs_mhckv3, I_mhckv3./9000, label="MHC+DOS (Li metal)")
+lines!(ax3, pbs_mhc3, I_mhc3./9000, label="MHC")
 
 axislegend(ax3)
-ylims!.([ax1, ax2, ax3], Ref((0,7000)))
+ylims!.([ax1, ax2, ax3], Ref((0,7000/9000)))
 
 save("fig3.png", fig)
 fig
