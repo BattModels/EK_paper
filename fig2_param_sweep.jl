@@ -3,6 +3,7 @@ using DelimitedFiles
 using Serialization
 using DataFrames
 using CairoMakie
+using Colors
 
 λ = .3
 
@@ -11,7 +12,7 @@ bv = ButlerVolmer(100, 0.5)
 m = Marcus(900, λ) # max current ~900
 amhc = AsymptoticMarcusHushChidsey(15000, λ)
 
-models = [bv, m, amhc]
+models = [bv, amhc, m]
 T_vals = [275, 350, 500]
 Ω_vals = [0.075, 0.1]
 
@@ -68,6 +69,8 @@ set_theme!(theme)
 tls = 20
 lw = 3
 
+model_colors = Dict(bv=>:teal, m=>:mediumorchid4, amhc=>:goldenrod)
+
 f = Figure(resolution=(900, 900))
 g = GridLayout()
 T_inds = 1:length(T_vals)
@@ -94,7 +97,7 @@ for T_ind in T_inds
                 data = readdlm("data/fig2/$(nameof(typeof(m)))_T$(T)_Omega$(Ω).txt")
                 pbs = data[:,1]
                 I = data[:,2]
-                lines!(g[Ω_ind+1, T_ind], pbs, I./900, label=model_text[nameof(typeof(m))])
+                lines!(g[Ω_ind+1, T_ind], pbs, I./900, label=model_text[nameof(typeof(m))], color=model_colors[m])
             end
         end
     end
@@ -134,9 +137,9 @@ V = 0.001:0.01:0.35
 for T_ind in T_inds
     T = T_vals[T_ind]
     # nondimensionalizing by the Marcus I₀
-    lines!(axes[1,T_ind], V, abs.(bv(V, T=T))./900)
-    lines!(axes[1,T_ind], V, abs.(m(V, T=T))./900)
-    lines!(axes[1,T_ind], V, abs.(amhc(V, T=T))./900)
+    lines!(axes[1,T_ind], V, abs.(bv(V, T=T))./900, color=model_colors[bv])
+    lines!(axes[1,T_ind], V, abs.(m(V, T=T))./900, color=model_colors[m])
+    lines!(axes[1,T_ind], V, abs.(amhc(V, T=T))./900, color=model_colors[amhc])
 end
 
 for i in 1:length(T_vals)

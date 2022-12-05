@@ -100,6 +100,8 @@ theme = Theme(fontsize = 22,
             font = "Noto")
 set_theme!(theme)
 
+model_colors = Dict(AsymptoticMarcusHushChidsey=>:goldenrod, MarcusHushChidsey=>:tomato2, MarcusHushChidseyDOS=>:steelblue4)
+
 fig = Figure(resolution=(1300,500))
 grid = fig[1, 1:2] = GridLayout()
 
@@ -109,17 +111,17 @@ ax2 = Axis(grid[1,2]; title=L"λ=5k_{\text{B}}T", yticklabelsvisible=false, ax_a
 ax3 = Axis(grid[1,3]; title=L"λ=10k_{\text{B}}T", yticklabelsvisible=false, ax_args...)
 
 # nondimensionalize by the equivalent Marcus model I₀
-lines!(ax1, pbs_amhc1, I_amhc1./9000, label="asymptotic MHC")
-lines!(ax1, pbs_mhckv1, I_mhckv1./9000, label="MHC+DOS (Li metal)")
-lines!(ax1, pbs_mhc1, I_mhc1./9000, label="MHC")
+lines!(ax1, pbs_amhc1, I_amhc1./9000, label="asymptotic MHC", color=model_colors[AsymptoticMarcusHushChidsey])
+lines!(ax1, pbs_mhckv1, I_mhckv1./9000, label="MHC+DOS (Li metal)", color=model_colors[MarcusHushChidseyDOS])
+lines!(ax1, pbs_mhc1, I_mhc1./9000, label="MHC", color=model_colors[MarcusHushChidsey])
 
-lines!(ax2, pbs_amhc2, I_amhc2./9000, label="asymptotic MHC")
-lines!(ax2, pbs_mhckv2, I_mhckv2./9000, label="MHC+DOS (Li metal)")
-lines!(ax2, pbs_mhc2, I_mhc2./9000, label="MHC")
+lines!(ax2, pbs_amhc2, I_amhc2./9000, label="asymptotic MHC", color=model_colors[AsymptoticMarcusHushChidsey])
+lines!(ax2, pbs_mhckv2, I_mhckv2./9000, label="MHC+DOS (Li metal)", color=model_colors[MarcusHushChidseyDOS])
+lines!(ax2, pbs_mhc2, I_mhc2./9000, label="MHC", color=model_colors[MarcusHushChidsey])
 
-lines!(ax3, pbs_amhc3, I_amhc3./9000, label="asymptotic MHC")
-lines!(ax3, pbs_mhckv3, I_mhckv3./9000, label="MHC+DOS (Li metal)")
-lines!(ax3, pbs_mhc3, I_mhc3./9000, label="MHC")
+lines!(ax3, pbs_amhc3, I_amhc3./9000, label="asymptotic MHC", color=model_colors[AsymptoticMarcusHushChidsey])
+lines!(ax3, pbs_mhckv3, I_mhckv3./9000, label="MHC+DOS (Li metal)", color=model_colors[MarcusHushChidseyDOS])
+lines!(ax3, pbs_mhc3, I_mhc3./9000, label="MHC", color=model_colors[MarcusHushChidsey])
 
 axislegend(ax3)
 ylims!.([ax1, ax2, ax3], Ref((0,7000/9000)))
