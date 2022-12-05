@@ -152,7 +152,7 @@ for i in 1:length(T_vals)
 end
 axes[1,2].xlabel = "V"
 
-text!(axes[2,3], 0.1, 50, text="(uniform mixing at\n all x and I)", justification=:center)
+text!(axes[2,3], 0.1, 50/900, text="(uniform mixing at\n all x and I)", justification=:center)
 
 save("fig2.png", f)
 f
