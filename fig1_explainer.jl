@@ -1,3 +1,7 @@
+"""
+Code to generate Figure 1 from the manuscript, which serves as the "explainer" figure for how the phase diagrams are constructed. It plots the thermodynamic and kinetic versions of both the chemical potential and Gibbs free energy, as well as the phase diagram for both the intercalation and deintercalation reaction directions. The Tafel plot is inset into the chemical potential plot. Voltages are normalized by kT, energies by the interaction parameter Ω, and currents by I₀, the prefactor of the Marcus model (and maximum current it can attain).
+"""
+
 using ElectrochemicalKinetics
 using CairoMakie
 using DelimitedFiles

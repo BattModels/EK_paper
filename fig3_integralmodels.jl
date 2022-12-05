@@ -1,3 +1,7 @@
+"""
+Code to generate Figure 3 from the manuscript, which plots phase diagrams for the two integral-based models (with the asymptotic MHC approximation included for comparison) with three different reorganization energies λ, given in units of the thermal energy.
+"""
+
 using ElectrochemicalKinetics
 using DelimitedFiles
 using CairoMakie

@@ -1,3 +1,7 @@
+"""
+Code to generate Figure 2 from the manuscript, which sweeps three values of temperature and two for the interaction parameter Ω for three kinetic models, plotting their Tafel plots along the top row, and the resulting phase diagrams below.
+"""
+
 using ElectrochemicalKinetics
 using DelimitedFiles
 using Serialization

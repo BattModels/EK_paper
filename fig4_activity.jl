@@ -1,3 +1,7 @@
+"""
+Code to generate Figure 4 from the manuscript. Construct phase diagrams for a Butler-Volmer model with three different models for site activity, and plot them, normalized against the I₀ of a Marcus model with the same low-overpotential behavior at 300K. This normalization choice is because of the clear interpretability of I₀ in the case of a Marcus model as the largest current it can reach.
+"""
+
 using ElectrochemicalKinetics
 using CairoMakie
 using DelimitedFiles
