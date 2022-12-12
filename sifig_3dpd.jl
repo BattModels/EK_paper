@@ -30,7 +30,7 @@ T_vals = 270:10:590
 #         append!(z, I)
 #     end
 
-#     open("./data/sifig/$(nameof(typeof(m))).txt","w") do io
+#     open("./data/sifig_3d/$(nameof(typeof(m))).txt","w") do io
 #         writedlm(io, [x y z])
 #     end
 # end
@@ -45,7 +45,7 @@ zlims!.(axes, Ref((0,1000)))
 
 for (m, ax) in zip(models, axes)
     println(nameof(typeof(m)))
-    data = readdlm("./data/sifig/$(nameof(typeof(m)))_clean.txt")
+    data = readdlm("./data/sifig_3d/$(nameof(typeof(m)))_clean.txt")
     df = DataFrame(data, [:x, :T, :I])
 
     # to get a draggable scatterplot with GLMakie...
