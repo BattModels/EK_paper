@@ -26,7 +26,7 @@ for i in 1:length(α_vals)
     filename = "./data/sifig_etransfer/$(α).txt"
     # println(α)
     # bv = ButlerVolmer(100, α)
-    # pbs, I = phase_diagram(bv, I_max=I_max)
+    # pbs, I = phase_diagram(bv, I_max=I_max, I_step=0.25)
     # open(filename,"w") do io
     #     writedlm(io, [pbs I])
     # end
