@@ -110,7 +110,7 @@ fig = Figure(resolution=(1300,500))
 grid = fig[1, 1:2] = GridLayout()
 
 ax_args = Dict(:xlabel=>"x", :xgridvisible=>false, :ygridvisible=>false)
-ax1 = Axis(grid[1,1]; title=L"λ=2k_{\text{B}}T", ylabel=L"\textrm{I }[I_0]", ax_args...)
+ax1 = Axis(grid[1,1]; title=L"λ=2k_{\text{B}}T", ylabel=L"\textrm{I }[\text{units of }A^{\text{M}}]", ax_args...)
 ax2 = Axis(grid[1,2]; title=L"λ=5k_{\text{B}}T", yticklabelsvisible=false, ax_args...)
 ax3 = Axis(grid[1,3]; title=L"λ=10k_{\text{B}}T", yticklabelsvisible=false, ax_args...)
 

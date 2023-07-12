@@ -117,17 +117,17 @@ setproperty!.(axes[:,2:end], :yticklabelsvisible, false)
 
 # add parameter and axis labels...
 Label(g[1, 4], "Rate models", tellheight=false, width=5, rotation=3pi/2, padding=(-25,0,0,0), font = "TeX Gyre Heros Bold",)
-Label(g[2, 4], "Ω=$(Ω_vals[1])", tellheight=false, width=5, rotation=3pi/2, padding=(-25,0,0,0), font = "TeX Gyre Heros Bold",)
-Label(g[3, 4], "Ω=$(Ω_vals[2])", tellheight=false, width=5, rotation=3pi/2, padding=(-25,0,0,0), font = "TeX Gyre Heros Bold",)
+Label(g[2, 4], "Ω=$(Ω_vals[1]) eV", tellheight=false, width=5, rotation=3pi/2, padding=(-25,0,0,0), font = "TeX Gyre Heros Bold",)
+Label(g[3, 4], "Ω=$(Ω_vals[2]) eV", tellheight=false, width=5, rotation=3pi/2, padding=(-25,0,0,0), font = "TeX Gyre Heros Bold",)
 
 for j in 1:length(T_vals)
-    axes[1,j].title = "T=$(T_vals[j])"
+    axes[1,j].title = "T=$(T_vals[j]) K"
 end
 
 # axes[1,1].yticks = (900 .* 10.0 .^ -2:1:2, [L"10^{-2}I_0", L"10^{-1}I_0", L"I_0", L"10I_0", L"10^{2}I_0"])
 # axes[2,1].yticks = (900 .* 10.0 .^ -2:1:2, [L"10^{-2}I_0", L"10^{-1}I_0", L"I_0", L"10I_0", L"10^{2}I_0"])
 
-axes[2,1].ylabel = L"\textrm{Current }[I_0]"
+axes[2,1].ylabel = L"\textrm{Current [in units of} A^M]"
 axes[3,2].xlabel = "x"
 
 # tweak spacing

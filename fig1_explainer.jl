@@ -54,7 +54,7 @@ grid = f[1:6,1] = GridLayout()
 band!(µ_ax, x[1:x0_ind], µth_vals[1:x0_ind], µ_vals[1:x0_ind], color=(:green, 0.3))
 
 # µ values (plotted second so they're on top of shading)
-lines!(µ_ax, x, µ_vals, label=L"\mu_{\mathrm{kin}}(x; I=I_0/40)", color=:orange)
+lines!(µ_ax, x, µ_vals, label=L"\mu_{\mathrm{kin}}(x;\text{ }I=A^{\text{M}}/40)", color=:orange)
 lines!(µ_ax, x, µth_vals, label=L"\mu_{\mathrm{thermo}}(x)", linestyle=:dot, color=:steelblue3)
 
 # tweaks/annotations
@@ -65,7 +65,7 @@ text!(µ_ax, x₀+0.01, Ω/4, text=L"\Delta \mu(x_0)", color=:mediumpurple4)
 
 # add Tafel plot inset
 inset_ax = Axis(grid[1:3,1],
-    width=Relative(0.47),
+    width=Relative(0.44),
     height=Relative(0.5),
     halign=0.24,
     valign=0.94,
@@ -73,7 +73,7 @@ inset_ax = Axis(grid[1:3,1],
     yscale=log10,
     xticks = ([0, kB*T, 2kB*T, 3kB*T, 4kB*T], ["0", L"k_{\text{B}}T", L"2k_{\text{B}}T", L"3k_{\text{B}}T", L"4k_{\text{B}}T"]),
     xticklabelsize=tls-2,
-    yticks=([I_calc], [L"\frac{I_0/40}{1-x_0}"]),
+    yticks=([I_calc], [L"\frac{A^{\text{M}}/40}{1-x_0}"]),
     yticklabelsize=tls
 )
 
@@ -110,7 +110,7 @@ g_ax = Axis(grid[4:6,1],
 
 limits!(g_ax, (0,1), (0.17Ω, 0.47Ω))
 
-lines!(g_ax, x[1:end-1], g.(x[1:end-1]), label=L"g_{\mathrm{kin}}(x;I=I_0/40)", color=:orange)
+lines!(g_ax, x[1:end-1], g.(x[1:end-1]), label=L"g_{\mathrm{kin}}(x;\text{ }I=A^{\text{M}}/40)", color=:orange)
 lines!(g_ax, x, g_thermo(x, Ω=Ω, T=T), label=L"g_{\mathrm{thermo}}(x)", linestyle=:dot, color=:steelblue3)
 
 # again, some tweaks and annotations
@@ -129,7 +129,7 @@ pb_grid = f[1:6,2] = GridLayout()
 pb_ax_1 = Axis(pb_grid[3:5,1], 
     xticksvisible = false,
     xticklabelsvisible = false,
-    yticks = ([0, 0.05I₀, 0.1I₀], ["0","I₀/20","I₀/10"]),
+    yticks = ([0, 0.05I₀, 0.1I₀], [L"0",L"A^{\text{M}}/20",L"A^{\text{M}}/10"]),
     yticklabelsize = tls,
     xgridvisible = false,
     ygridvisible = false,
@@ -162,7 +162,7 @@ band!(pb_ax_1, pbs, zeros(length(pbs)).-I_force, I, color=(:darkgrey, 0.3))
 pb_ax_2 = Axis(pb_grid[6,1], 
     xlabel = "x",
     xticklabelsize = tls,
-    yticks = ([-0.002I₀, 0],["-0.002I₀",""]),
+    yticks = ([-0.002I₀, 0],[L"-0.002A^{\text{M}}",""]),
     yticklabelsize = tls,
     xgridvisible = false,
     ygridvisible = false,

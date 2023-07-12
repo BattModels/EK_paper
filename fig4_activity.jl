@@ -38,7 +38,7 @@ theme = Theme(fontsize = 22,
 set_theme!(theme)
 
 f = Figure(resolution=(500,450))
-ax = Axis(f[1,1]; xlabel="x", xgridvisible=false, ygridvisible=false, ylabel=L"\textrm{I }[I_0]")
+ax = Axis(f[1,1]; xlabel="x", xgridvisible=false, ygridvisible=false, ylabel=L"\textrm{I }[A^{\text{M}}]")
 ylims!(ax, (0, (I_max-5)/900))
 
 for ac in activity_fs
