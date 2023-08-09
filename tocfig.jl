@@ -14,6 +14,7 @@ I₀ = 900
 λ = 0.3
 m = Marcus(I₀, λ) # inverts at a current of I₀ and voltage of λ
 bv = ButlerVolmer(I₀/9, 0.5) # aligns with that Marcus model at low overpotential and 300K
+model = m
 T = 375
 Ω = 0.1
 I_force = I₀/40
@@ -31,14 +32,16 @@ g = g_kinetic(I_force, model, Ω=Ω, T=T)
 Δg = g(x₀) - g_thermo(x₀, Ω=Ω, T=T)
 
 # make figure
-theme = Theme(fontsize = 28,
+theme = Theme(fontsize = 24,
             linewidth = 6,
             font = "Noto")
 set_theme!(theme)
 
-f = Figure(resolution=100 .* (15, 7))
+ts = 24 # font size for when overriding
 
-µ_ax = Axis(f[1:2,1:4],
+f = Figure(resolution=100 .* (7, 7))
+
+µ_ax = Axis(f[1:2,1:6],
     xgridvisible = false,
     xtickalign=1,
     xticks = ([],[]),
@@ -61,13 +64,13 @@ lines!(µ_ax, x, µth_vals, label=L"\mu_{\mathrm{thermo}}(x)", linestyle=:dot, c
 limits!(µ_ax, (0,1), (-0.4Ω, 2.3Ω))
 axislegend(µ_ax, position=:rt, labelsize=32)
 arrows!(µ_ax, [x₀, x₀], [µth_vals[x0_ind], µ_vals[x0_ind]-1e-3], [0, 0], [Δµ-2e-3, -Δµ+2e-3], color=:mediumpurple4, linewidth=3, arrowsize=10)
-text!(µ_ax, x₀+0.01, Ω/4, text=L"\Delta \mu(x_0)", color=:mediumpurple4, textsize=36)
+text!(µ_ax, x₀+0.01, Ω/4, text=L"\Delta \mu(x_0)", color=:mediumpurple4, textsize=ts)
 
 # add Tafel plot inset
-inset_ax = Axis(f[1:2,1:5],
-    width=Relative(0.47),
+inset_ax = Axis(f[1:2,1:6],
+    width=Relative(0.55),
     height=Relative(0.53),
-    halign=0.17,
+    halign=0.22,
     valign=0.94,
     backgroundcolor=:gray95,
     yscale=log10,
@@ -75,7 +78,7 @@ inset_ax = Axis(f[1:2,1:5],
     # xticklabelsize=tls-2,
     yticks=([], []),
     ylabel=L"\log(I)",
-    ylabelsize=34,
+    ylabelsize=ts,
 )
 
 Vmax = 0.2
@@ -93,20 +96,20 @@ axislegend(inset_ax, position=:rb)#, labelsize=16)
 
 arrows!(inset_ax, [0, 0.92*Δµ], [I_calc, I_calc], [0.92*Δµ-1e-3, -0.92*Δµ+1e-3], [0,0], color=:mediumpurple4, linewidth=3, arrowsize=10)
 
-text!(inset_ax, 0.004, 1.04*I_calc, text=L"\Delta \mu(x_0)", color=:mediumpurple4, textsize=32)
+text!(inset_ax, 0.003, 1.04*I_calc, text=L"\Delta \mu(x_0)", color=:mediumpurple4, textsize=ts)
 
-textx = 0.33
+textx = 0.34
 texty = -0.01
-text!(µ_ax, textx, texty, text=L"\Delta g(x_0)", color=:green, textsize=36)
-arrows!(µ_ax, [textx+0.13], [texty+0.01], [0.13], [0.012], color=:green4, linewidth=2)
+text!(µ_ax, textx, texty, text=L"\Delta g(x_0)", color=:green, textsize=ts)
+arrows!(µ_ax, [textx+0.12], [texty+0.01], [0.13], [0.012], color=:green4, linewidth=2)
 
 # 3D phase diagram on the other side
 T_vals = 270:10:590
-pb_ax_1 = Axis3(f[2,5:6], azimuth=3pi/4, elevation=pi/12, aspect=(10,8,6), xlabel="x", ylabel="T [K]", zlabel="I", xticksvisible=false, xticklabelsvisible=false, yticksvisible=false, yticklabelsvisible=false, zticksvisible=false, zticklabelsvisible=false, xgridvisible=false, ygridvisible=false, zgridvisible=false, xlabeloffset=10, ylabeloffset=10, zlabeloffset=5, title="Marcus")
-pb_ax_2 = Axis3(f[1,5:6], azimuth=3pi/4, elevation=pi/12, aspect=(10,8,6), xticksvisible=false, xticklabelsvisible=false, yticksvisible=false, yticklabelsvisible=false, zticksvisible=false, zticklabelsvisible=false, xgridvisible=false, ygridvisible=false, zgridvisible=false, xlabelvisible=false, ylabelvisible=false, zlabelvisible=false, title="Butler-Volmer", titlecolor=(:black,0.5), xspinecolor_1=(:black,0.5), xspinecolor_2=(:black,0.5), xspinecolor_3=(:black,0.5), xlabelcolor=(:black,0.5), yspinecolor_1=(:black,0.5), yspinecolor_2=(:black,0.5), yspinecolor_3=(:black,0.5), ylabelcolor=(:black,0.5), zspinecolor_1=(:black,0.5), zspinecolor_2=(:black,0.5), zspinecolor_3=(:black,0.5), zlabelcolor=(:black,0.5),)
+pb_ax_1 = Axis3(f[3,4:6], azimuth=3pi/4, elevation=pi/12, aspect=(10,8,6), xlabel="x", ylabel="T [K]", zlabel="I", xticksvisible=false, xticklabelsvisible=false, yticksvisible=false, yticklabelsvisible=false, zticksvisible=false, zticklabelsvisible=false, xgridvisible=false, ygridvisible=false, zgridvisible=false, xlabeloffset=10, ylabeloffset=10, zlabeloffset=5, title="Marcus")
+pb_ax_2 = Axis3(f[3,1:3], azimuth=3pi/4, elevation=pi/12, aspect=(10,8,6), xticksvisible=false, xticklabelsvisible=false, yticksvisible=false, yticklabelsvisible=false, zticksvisible=false, zticklabelsvisible=false, xgridvisible=false, ygridvisible=false, zgridvisible=false, xlabelvisible=false, ylabelvisible=false, zlabelvisible=false, title="Butler-Volmer", titlecolor=(:black,0.5), xspinecolor_1=(:black,0.5), xspinecolor_2=(:black,0.5), xspinecolor_3=(:black,0.5), xlabelcolor=(:black,0.5), yspinecolor_1=(:black,0.5), yspinecolor_2=(:black,0.5), yspinecolor_3=(:black,0.5), ylabelcolor=(:black,0.5), zspinecolor_1=(:black,0.5), zspinecolor_2=(:black,0.5), zspinecolor_3=(:black,0.5), zlabelcolor=(:black,0.5),)
 zlims!.([pb_ax_1, pb_ax_2], Ref((0, 1000)))
 
-data = readdlm("./data/sifig/Marcus_clean.txt")
+data = readdlm("./data/sifig_3d/Marcus_clean.txt")
 df = DataFrame(data, [:x, :T, :I])
 regular_x = 0.0:0.03:0.99
 regular_T = T_vals
@@ -121,7 +124,7 @@ for i in 1:length(T_vals)
 end
 wireframe!(pb_ax_1, regular_x, regular_T, grid_I, linewidth=2, color=:mediumorchid4)
 
-data = readdlm("./data/sifig/ButlerVolmer_clean.txt")
+data = readdlm("./data/sifig_3d/ButlerVolmer_clean.txt")
 df = DataFrame(data, [:x, :T, :I])
 regular_x = 0.0:0.03:0.99
 regular_T = T_vals
